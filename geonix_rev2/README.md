@@ -1,25 +1,35 @@
-# Configurations for Geonix Rev 2
+# Geonix Rev 2 — Configuration Notes
 
-## VIA
+This repo tracks how I configure the **Geonix Rev.2** using either **VIA** (GUI, dynamic keymap) or **QMK** (compiled firmware). It also keeps the design/keymap files I use.
 
-If the keyboard is running the via-enabled firmware, we can use the [VIA](https://usevia.app/) to configure it. Since this is a customized keyboard, we will first need to enable the "design" tab, and then upload the design file [geonix_via_design.json](geonix_via_design.json) to the design tab.
+---
 
-In [via_keymaps](via_keymaps), I have stored my customized VIA keymap json and the original factory VIA keymap json.
+## Option A — VIA (recommended for quick edits)
 
-**NOTE**: Use an USB-C to USB-C cable, and make sure the keyboard is in the USB mode.
-**IMPORTANT**: Always make sure that you have access to the `TO_USB` key while editting the keymap using the VIA app. Otherwise if you accidentally get out of the USB mode, you will not be able to edit the keymap again with the VIA app because it requires the keyboard being connected with USB cable and in `USB` mode.
+If the keyboard is running **VIA-enabled firmware**, use the web app:
 
-## QMK FIRMWARE
+1. Open **VIA**: https://usevia.app/  
+2. Enable **Settings → Show Design tab**.  
+3. Go to **Design** and **Load** the local file: [`geonix_via_design.json`](geonix_via_design.json).  
+4. Switch back to **Configure** and remap keys/layers as needed.
 
-We can also use QMK firmware to flash a firmware into keyboard. We can compile and flash a firmware with a good initial default keymap and with via enabled.
+The directory [`via_keymaps`](via_keymaps) contains:
+- My customized VIA keymap JSON
+- The original factory VIA keymap JSON (for reference/backups)
 
-Note that this has to be done in the vendor's version (can be found [here](https://drive.google.com/drive/folders/1QNRFeJZBt527T0AZcOdAccgRrbsD4zqa)) of the `qmk_firmware`, which means that I have to do
+> **Note (hardware mode):** Use a **USB-C ↔ USB-C** cable and make sure the keyboard is in **USB mode** before using VIA.  
+> **Important (safety key):** Always keep a key that can switch back to **USB mode** (e.g., a `TO_USB`/mode key). If you drop into a wireless mode while editing, VIA (which talks over USB) won’t see the board until you switch back.
 
+---
+
+## Option B — QMK firmware (compile + flash)
+
+I build/flash the vendor’s QMK tree with a good default keymap and VIA support.
+
+> **Vendor tree**: use the **Geonix-supplied** `qmk_firmware` (not upstream). I store it at:
+> `/home/breakds/projects/qmk/qmk_firmware_geonix40`
+
+### Point the QMK CLI at the vendor tree
 ```bash
 qmk config user.qmk_home=/home/breakds/projects/qmk/qmk_firmware_geonix40
-```
-
-before running `qmk cd`. 
-
-**NOTE**: `qmk cd` may complain about `appdirs` not installed, but it is not important. Just remove it from `requirements.txt` in the customized qmk firmware repo if it is present.
-
+qmk cd
