@@ -33,3 +33,15 @@ You can also build/flash the vendor’s QMK tree with a good default keymap and 
 ```bash
 qmk config user.qmk_home=/home/breakds/projects/qmk/qmk_firmware_geonix40
 qmk cd
+
+### Compile (VIA keymap) and flash
+
+```bash
+# build the VIA-enabled firmware
+qmk compile -kb geonix40/geonix40 -km via
+
+# enter bootloader, then flash
+qmk flash -kb geonix40/geonix40 -km via
+```
+
+> **Note (NixOS)**: If `qmk cd` complains about a missing Python module (e.g., `appdirs`), I just removed it from the vendor repo’s requirements.txt. Alternatively, run the vendor repo’s shell.nix / dev shell so Python deps live in the project, not globally.
