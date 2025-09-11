@@ -26,7 +26,7 @@ The directory [`via_keymaps`](via_keymaps) contains:
 
 I build/flash the vendor’s QMK tree with a good default keymap and VIA support.
 
-> **Vendor tree**: use the **Geonix-supplied** `qmk_firmware` (not upstream). I store it at:
+> **Vendor tree**: use the **Geonix-supplied** [qmk_firmware](https://drive.google.com/drive/folders/1QNRFeJZBt527T0AZcOdAccgRrbsD4zqa) (not upstream). I store it at:
 > `/home/breakds/projects/qmk/qmk_firmware_geonix40`
 
 ### Point the QMK CLI at the vendor tree
