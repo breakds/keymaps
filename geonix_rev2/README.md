@@ -33,6 +33,9 @@ You can also build/flash the vendor’s QMK tree with a good default keymap and 
 ```bash
 qmk config user.qmk_home=/home/breakds/projects/qmk/qmk_firmware_geonix40
 qmk cd
+```
+
+> **Note (NixOS)**: If `qmk cd` complains about a missing Python module (e.g., `appdirs`), I just removed it from the vendor repo’s requirements.txt. Alternatively, run the vendor repo’s shell.nix / dev shell so Python deps live in the project, not globally.
 
 ### Compile (VIA keymap) and flash
 
@@ -40,8 +43,50 @@ qmk cd
 # build the VIA-enabled firmware
 qmk compile -kb geonix40/geonix40 -km via
 
-# enter bootloader, then flash
-qmk flash -kb geonix40/geonix40 -km via
+/home/breakds/projects/qmk/qmk_firmware_geonix40/lib/python/qmk/decorators.py:20: UserWarning: cli._subcommand has been deprecated, please use cli.subcommand_name to get the subcommand name instead.
+  if cli.config_source[cli._subcommand.__name__]['keyboard'] != 'argument':
+/home/breakds/projects/qmk/qmk_firmware_geonix40/lib/python/qmk/decorators.py:40: UserWarning: cli._subcommand has been deprecated, please use cli.subcommand_name to get the subcommand name instead.
+  if cli.config_source[cli._subcommand.__name__]['keymap'] != 'argument':
+Ψ Compiling keymap with make -r -R -f builddefs/build_keyboard.mk -s KEYBOARD=geonix40/geonix40 KEYMAP=via KEYBOARD_FILESAFE=geonix40_geonix40 TARGET=geonix40_geonix40_via INTERMEDIATE_OUTPUT=.build/obj_geonix40_geonix40_via VERBOSE=false COLOR=true SILENT=false QMK_BIN="qmk"
+
+⚠ geonix40/geonix40: led_config: geonix40.c: Unable to parse g_led_config matrix data
+arm-none-eabi-gcc (Arm GNU Toolchain 14.2.Rel1 (Build arm-14.52)) 14.2.1 20241119
+Copyright (C) 2024 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+Size before:
+   text    data     bss     dec     hex filename
+      0   68598       0   68598   10bf6 geonix40_geonix40_via.bin
+
+Compiling: quantum/via.c                                                                            [OK]
+Linking: .build/geonix40_geonix40_via.elf                                                           [OK]
+Creating binary load file for flashing: .build/geonix40_geonix40_via.bin                            [OK]
+Creating load file for flashing: .build/geonix40_geonix40_via.hex                                   [OK]
+
+Size after:
+   text    data     bss     dec     hex filename
+      0   68598       0   68598   10bf6 geonix40_geonix40_via.bin
+
+Copying geonix40_geonix40_via.bin to qmk_firmware folder                                            [OK]
+Copying geonix40_geonix40_via.bin to userspace folder                                              cp: cannot create regular file '/home/breakds/qmk_userspace/geonix40_geonix40_via.bin': No such file or directory
+ [OK]
+
 ```
 
-> **Note (NixOS)**: If `qmk cd` complains about a missing Python module (e.g., `appdirs`), I just removed it from the vendor repo’s requirements.txt. Alternatively, run the vendor repo’s shell.nix / dev shell so Python deps live in the project, not globally.
+I just ignored the the warnings, and I think we do not care about copying the compiled bin file to userspace folder.
+
+We now need to flash the bin file into the keyboard. Note that `qmk flash` command won't work because geonix rev 2 comes with a custom bootloader.
+
+```bash
+$ rg -n '"bootloader"\s*:' keyboards/geonix40 -S
+keyboards/geonix40/geonix40/info.json
+79:    "bootloader": "custom",
+```
+
+We should 
+
+1. Enter the bootloader mode by holding the top-left key (Bootmagic) while plugging it in with the USB-C to USB-C cable
+2. You will see an USB disk being mounted (mine says 109KB)
+3. Copy the generated bin file from the compilation to this disk. The completion of the copy kicks off the flash process.
+4. Wait and do nothing until the flash is done. The USB disk will be ejected automatically and the keyboard become usable.
