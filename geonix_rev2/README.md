@@ -90,3 +90,16 @@ We should
 2. You will see an USB disk being mounted (mine says 109KB)
 3. Copy the generated bin file from the compilation to this disk. The completion of the copy kicks off the flash process.
 4. Wait and do nothing until the flash is done. The USB disk will be ejected automatically and the keyboard become usable.
+
+### Troubleshooting
+
+After flashing the VIA keymap firmware to the Geonix40 keyboard, the keyboard exhibits unwanted sleep behavior in Bluetooth mode:
+- The keyboard automatically turns off after 3-5 minutes of inactivity
+- Keypresses do not wake the keyboard
+- The physical power switch must be toggled off and on to restore functionality
+- This issue does not occur with the original firmware
+
+#### Solution
+Add a periodic reset of the `Usb_Change_Mode_Delay` counter to prevent it from reaching the sleep threshold. This is implemented using the `matrix_scan_user()` callback which runs continuously during the keyboard's main loop.
+
+Please see the updated `keymap.c`  [geonix40/geonix40/keymaps/via/keymap.c](geonix40/geonix40/keymaps/via/keymap.c).
